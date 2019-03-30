@@ -1,4 +1,10 @@
-with open('../../data/raw/amazon-meta_test.txt', 'r', encoding='utf8') as f:
+import csv
+
+with open('../../data/interim/amazon-meta_extracted.csv', encoding='utf8', mode='a', newline='') as data_file:
+    data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    data_writer.writerow(['Product id', 'Product title', 'Product review count', 'Product average rating', 'Product recommendations'])
+
+with open('../../data/raw/amazon-meta.txt', 'r', encoding='utf8') as f:
     lines = 0
     for line in f:
         lines += 1  # Calculating the number of lines in the file
@@ -29,10 +35,7 @@ with open('../../data/raw/amazon-meta_test.txt', 'r', encoding='utf8') as f:
             review_count = substring[1]  # Extracting the review count
             avg_rating = substring[-1][:-1]  # Extracting the avg rating and removing new line
         if fields == 5:
-            print('--------------------------')
-            print('ASIN:', prod_id)
-            print('Title:', title)
-            print('People who buy X also buy Y', similar)
-            print('Number of reviews: ', review_count)
-            print('Avg review rating: ', avg_rating)
             fields = 0  # start collecting info for new product
+            with open('../../data/interim/amazon-meta_extracted.csv', encoding='utf8', mode='a', newline='') as data_file:
+                data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                data_writer.writerow([prod_id, title, review_count, avg_rating, similar])
