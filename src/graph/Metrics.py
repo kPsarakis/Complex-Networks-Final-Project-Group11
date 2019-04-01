@@ -1,7 +1,7 @@
 import networkx as nx
 
 
-def print_metrics(g: nx.Graph):
+def print_metrics(g):
 
     # Number of nodes
     n = g.number_of_nodes()
@@ -32,18 +32,6 @@ def print_metrics(g: nx.Graph):
     c = nx.average_clustering(g)
     print("Clustering coeffcient: ", c)
 
-    # Average hop count
-    eh = nx.average_shortest_path_length(g)
-    print("Average hop count: ", eh)
-
-    # Diameter (Hmax)
-    hmax = get_max_hop_count(dict(nx.shortest_path_length(g)).values())
-    print("Diameter (Hmax): ", hmax)
-
-    # Spectral radius of the adjacency matrix
-    lambda1 = max(nx.adjacency_spectrum(g))
-    print("Spectral radius of the adjacency matrix: ", lambda1)
-
     # Algebraic connectivity
     ac = nx.algebraic_connectivity(g)
     print("Algebraic connectivity: ", ac)
@@ -55,8 +43,10 @@ def get_average_degree(g):
     n = g.number_of_nodes()
     s = 0
 
-    for i in range(1, n + 1):
-        s += g.degree(i)
+    d = [x[1] for x in g.degree]
+
+    for i in range(0, n):
+        s += d[i]
 
     return s / n
 
@@ -68,8 +58,10 @@ def get_degree_variance(g):
     m = get_average_degree(g)
     s = 0
 
-    for i in range(1, n + 1):
-        s += (g.degree(i)-m)**2
+    d = [x[1] for x in g.degree]
+
+    for i in range(0, n):
+        s += (d[i]-m)**2
 
     return s / n
 
@@ -96,29 +88,14 @@ def plot_degree_distribution(dd):
             degree = tuple(degree)
             prob = tuple(prob)
     indexes = np.argsort(degree)  # Finding the indexes with which to sort the probability list
-    sortedDegree = sorted(degree)
-    sortedProb = []
+    sorted_degree = sorted(degree)
+
     # Recreating the probability list with the correct ordering
     for index in indexes:
-        sortedProb.append(prob[index])
+        sorted_degree.append(prob[index])
     # plt.plot(degree, prob)
-    plt.plot(sortedDegree, sortedProb, 'r')
+    plt.plot(sorted_degree, sorted_degree, 'r')
     plt.title("Degree Distribution")
     plt.ylabel("Pr[D = k]")
     plt.xlabel("Degree")
     plt.show()
-
-
-# Max Hop-Count (diameter)
-def get_max_hop_count(sp):
-
-    _max = -1
-
-    for v in sp:
-
-        t_max = max(v.values())
-
-        if _max < t_max:
-            _max = t_max
-
-    return _max
