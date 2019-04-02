@@ -1,7 +1,6 @@
 import networkx as nx
 import Graph
 
-# @TODO: Change into random node set returned (and make a seperate method for constructing the graph)
 def random_connected_subgraph(graph, N):
     # Select a random node from the nodelist and add it to the set
     starting_node = Graph.random_node_id(list(graph.nodes))

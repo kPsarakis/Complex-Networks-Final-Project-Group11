@@ -75,20 +75,10 @@ def write_to_csv(path, output):
 
 if __name__ == '__main__':
 
-<<<<<<< HEAD
     _g = initialize_graph()
-=======
-    g = initialize_largest_connected_subgraph()
->>>>>>> c4e8412cb8d08de0b9c216b836aafb29da9ecfdc
 
     res = random_walk(_g, 100, 10000)
 
     write_to_csv("../../data/results/full_random_walk.csv", res)
 
-<<<<<<< HEAD
     # Met.print_metrics(_g)
-=======
-    # Met.print_connected_components(g)
-
-    Met.print_metrics(g)
->>>>>>> c4e8412cb8d08de0b9c216b836aafb29da9ecfdc
