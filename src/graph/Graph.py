@@ -38,13 +38,30 @@ def initialize_graph():
 
     return graph
 
+def initialize_largest_connected_subgraph():
+    # check if file already exists, then load, otherwise generate
+    largest_cc_file = Path("../../data/processed/largest_cc_subgraph.p")
+
+    if largest_cc_file.is_file():
+        largest_cc_subgraph = nx.read_gpickle(largest_cc_file)
+    else:
+        full_graph = initialize_graph()
+        # find the largest connected component and use it to construct subgraph
+        largest_cc = max(nx.connected_components(full_graph), key=len)
+        largest_cc_subgraph = full_graph.subgraph(largest_cc)
+        # Save graph
+        nx.write_gpickle(largest_cc_subgraph, largest_cc_file)
+    return largest_cc_subgraph
+
 
 if __name__ == '__main__':
 
-    g = initialize_graph()
+    g = initialize_largest_connected_subgraph()
 
     n = list(g.nodes)
 
     print(random_node_id(n))
+
+    # Met.print_connected_components(g)
 
     Met.print_metrics(g)

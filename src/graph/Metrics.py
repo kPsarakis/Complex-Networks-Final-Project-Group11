@@ -1,5 +1,14 @@
 import networkx as nx
 
+def print_connected_components(g):    
+    # Number of connected components
+    cc = nx.number_connected_components(g)
+    print("Number of connected components: %d" % cc)
+
+    # Find the largest connected component
+    largest_cc = max(nx.connected_components(g), key=len)
+    print("Largest connected component is of size: %d" % len(largest_cc))
+
 
 def print_metrics(g):
 
