@@ -18,7 +18,6 @@ def random_walk(graph, it, steps, param):
     prev_node = None
 
     for i in range(0, it):
-
         if param == "rw":
             prev_node = random_node_id(list(graph.nodes))
         elif param == "grw":
@@ -26,6 +25,9 @@ def random_walk(graph, it, steps, param):
                                                    node_counts)
 
         for step in range(0, steps):
+            # Print every 1000 timesteps to keep track of where we are
+            if step % 1000 == 0:
+                print(step)
 
             node_counts[str(prev_node)] += 1
 
@@ -100,14 +102,14 @@ def initialize_largest_connected_subgraph():
 
 def write_to_csv(path, output):
     global DIR_PREFIX
-    pd.DataFrame.from_dict(DIR_PREFIX + output, orient='index', columns=['number_of_visits']) \
+    pd.DataFrame.from_dict(output, orient='index', columns=['number_of_visits']) \
         .sort_values(by='number_of_visits', ascending=False)\
-        .to_csv(path)
+        .to_csv(DIR_PREFIX + path)
 
 
 if __name__ == '__main__':
     _g = initialize_largest_connected_subgraph()
 
-    res = random_walk(_g, 1, int(1e6), "rw")
+    res = random_walk(_g, 1, int(1e9), "rw")
 
-    write_to_csv("data/results/lcs_generalized_random_walk.csv", res)
+    write_to_csv("data/results/lcs_random_walk_1e6.csv", res)
