@@ -6,32 +6,56 @@ import graph.Metrics as Met
 import operator
 
 
-def random_walk(graph, it, steps):
+def random_walk(graph, it, steps, param):
 
     # initialize the node count dictionary with 0 counts
     node_counts = {node_ids: 0 for node_ids in list(graph.nodes)}
 
+    prev_node = None
+
     for i in range(0, it):
 
-        prev_node = random_node_id(list(graph.nodes))
+        if param == "rw":
+            prev_node = random_node_id(list(graph.nodes))
+        elif param == "grw":
+            prev_node = generalized_random_node_id([n[1] for n in list(graph.edges(random_node_id(list(graph.nodes))))],
+                                                   node_counts)
 
         for step in range(0, steps):
 
             node_counts[str(prev_node)] += 1
 
-            ns = next_step(prev_node, graph)
+            ns = next_step(prev_node, graph, node_counts, param)
 
             prev_node = ns
 
+    node_counts = {k: (v/(it*steps)) for k, v in node_counts.items()}
+
     return node_counts
+
+
+def generalized_random_node_id(nodes, counts: dict):
+    # vi(t)
+    val = {str(k): counts[str(k)] for k in nodes}
+    # sum aij*vj(t)
+    s = sum(val.values())
+    # dj
+    d = len(nodes)
+    # pi(t)
+    p = {k: (v+1)/(s+d) for k, v in val.items()}
+
+    return random.choices(population=list(p.keys()), weights=list(p.values()))[0]
 
 
 def random_node_id(nodes):
     return random.choice(nodes)
 
 
-def next_step(node, graph):
-    return random_node_id([n[1] for n in list(graph.edges(node))])
+def next_step(node, graph, node_counts, param):
+    if param == "rw":
+        return random_node_id([n[1] for n in list(graph.edges(node))])
+    elif param == "grw":
+        return generalized_random_node_id([n[1] for n in list(graph.edges(node))], node_counts)
 
 
 def initialize_graph():
@@ -50,6 +74,7 @@ def initialize_graph():
         nx.write_gpickle(graph, my_file)
 
     return graph
+
 
 def initialize_largest_connected_subgraph():
     # check if file already exists, then load, otherwise generate
@@ -75,20 +100,16 @@ def write_to_csv(path, output):
 
 if __name__ == '__main__':
 
-<<<<<<< HEAD
-    _g = initialize_graph()
-=======
-    g = initialize_largest_connected_subgraph()
->>>>>>> c4e8412cb8d08de0b9c216b836aafb29da9ecfdc
+    # _g = initialize_graph()
 
-    res = random_walk(_g, 100, 10000)
+    _g = initialize_largest_connected_subgraph()
 
-    write_to_csv("../../data/results/full_random_walk.csv", res)
+    res = random_walk(_g, 1, int(1e9), "grw")
 
-<<<<<<< HEAD
+    write_to_csv("../../data/results/lcs_generalized_random_walk.csv", res)
+
     # Met.print_metrics(_g)
-=======
+
     # Met.print_connected_components(g)
 
-    Met.print_metrics(g)
->>>>>>> c4e8412cb8d08de0b9c216b836aafb29da9ecfdc
+    # Met.print_metrics(g)
