@@ -2,9 +2,13 @@ import pandas as pd
 import networkx as nx
 import random
 from pathlib import Path
-import graph.Metrics as Met
+import Metrics as Met
 import operator
 
+# On windows?
+# DIR_PREFIX = "../../"
+# On MacOS
+DIR_PREFIX = ""
 
 def random_walk(graph, it, steps):
 
@@ -35,12 +39,13 @@ def next_step(node, graph):
 
 
 def initialize_graph():
-    my_file = Path("../../data/graph.p")
+    global DIR_PREFIX
+    my_file = Path(DIR_PREFIX + "data/graph.p")
 
     if my_file.is_file():
         graph = nx.read_gpickle(my_file)
     else:
-        df = pd.read_csv('../../data/processed/products_nodes_links.csv', sep=';')
+        df = pd.read_csv(DIR_PREFIX + 'data/processed/products_nodes_links.csv', sep=';')
         df.columns = ['node1', 'node2']
 
         graph = nx.Graph()
@@ -52,8 +57,9 @@ def initialize_graph():
     return graph
 
 def initialize_largest_connected_subgraph():
+    global DIR_PREFIX
     # check if file already exists, then load, otherwise generate
-    largest_cc_file = Path("../../data/processed/largest_cc_subgraph.p")
+    largest_cc_file = Path(DIR_PREFIX + "data/processed/largest_cc_subgraph.p")
 
     if largest_cc_file.is_file():
         largest_cc_subgraph = nx.read_gpickle(largest_cc_file)
@@ -75,10 +81,12 @@ def write_to_csv(path, output):
 
 if __name__ == '__main__':
 
-    _g = initialize_graph()
+    g = initialize_largest_connected_subgraph()
 
-    res = random_walk(_g, 100, 10000)
+    # res = random_walk(_g, 100, 10000)
 
-    write_to_csv("../../data/results/full_random_walk.csv", res)
+    # write_to_csv("../../data/results/full_random_walk.csv", res)
 
-    # Met.print_metrics(_g)
+    # Met.print_connected_components(g)
+    Met.print_metrics(g)
+
