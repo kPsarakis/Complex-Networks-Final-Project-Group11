@@ -2,12 +2,28 @@ import pandas as pd
 import networkx as nx
 import random
 from pathlib import Path
-import src.graph.Metrics as Met
+import graph.Metrics as Met
+import operator
 
 
-def random_walk(graph):
-    # node_couts = {}
-    return graph
+def random_walk(graph, it, steps):
+
+    # initialize the node count dictionary with 0 counts
+    node_counts = {node_ids: 0 for node_ids in list(graph.nodes)}
+
+    for i in range(0, it):
+
+        prev_node = random_node_id(list(graph.nodes))
+
+        for step in range(0, steps):
+
+            node_counts[str(prev_node)] += 1
+
+            ns = next_step(prev_node, graph)
+
+            prev_node = ns
+
+    return node_counts
 
 
 def random_node_id(nodes):
@@ -15,10 +31,7 @@ def random_node_id(nodes):
 
 
 def next_step(node, graph):
-    print(graph.edges(node))
-    print(len(graph.edges(node)))
-    print(1/len(graph.edges(node)))
-    return graph.edges(node)
+    return random_node_id([n[1] for n in list(graph.edges(node))])
 
 
 def initialize_graph():
@@ -54,14 +67,28 @@ def initialize_largest_connected_subgraph():
     return largest_cc_subgraph
 
 
+def write_to_csv(path, output):
+    pd.DataFrame.from_dict(output, orient='index', columns=['number_of_visits']) \
+        .sort_values(by='number_of_visits', ascending=False)\
+        .to_csv(path)
+
+
 if __name__ == '__main__':
 
+<<<<<<< HEAD
+    _g = initialize_graph()
+=======
     g = initialize_largest_connected_subgraph()
+>>>>>>> c4e8412cb8d08de0b9c216b836aafb29da9ecfdc
 
-    n = list(g.nodes)
+    res = random_walk(_g, 100, 10000)
 
-    print(random_node_id(n))
+    write_to_csv("../../data/results/full_random_walk.csv", res)
 
+<<<<<<< HEAD
+    # Met.print_metrics(_g)
+=======
     # Met.print_connected_components(g)
 
     Met.print_metrics(g)
+>>>>>>> c4e8412cb8d08de0b9c216b836aafb29da9ecfdc
