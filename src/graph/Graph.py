@@ -51,6 +51,21 @@ def initialize_graph():
 
     return graph
 
+def initialize_largest_connected_subgraph():
+    # check if file already exists, then load, otherwise generate
+    largest_cc_file = Path("../../data/processed/largest_cc_subgraph.p")
+
+    if largest_cc_file.is_file():
+        largest_cc_subgraph = nx.read_gpickle(largest_cc_file)
+    else:
+        full_graph = initialize_graph()
+        # find the largest connected component and use it to construct subgraph
+        largest_cc = max(nx.connected_components(full_graph), key=len)
+        largest_cc_subgraph = full_graph.subgraph(largest_cc)
+        # Save graph
+        nx.write_gpickle(largest_cc_subgraph, largest_cc_file)
+    return largest_cc_subgraph
+
 
 def write_to_csv(path, output):
     pd.DataFrame.from_dict(output, orient='index', columns=['number_of_visits']) \
@@ -60,10 +75,20 @@ def write_to_csv(path, output):
 
 if __name__ == '__main__':
 
+<<<<<<< HEAD
     _g = initialize_graph()
+=======
+    g = initialize_largest_connected_subgraph()
+>>>>>>> c4e8412cb8d08de0b9c216b836aafb29da9ecfdc
 
     res = random_walk(_g, 100, 10000)
 
     write_to_csv("../../data/results/full_random_walk.csv", res)
 
+<<<<<<< HEAD
     # Met.print_metrics(_g)
+=======
+    # Met.print_connected_components(g)
+
+    Met.print_metrics(g)
+>>>>>>> c4e8412cb8d08de0b9c216b836aafb29da9ecfdc
