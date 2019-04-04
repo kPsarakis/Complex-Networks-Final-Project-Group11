@@ -2,6 +2,7 @@ import pandas as pd
 import networkx as nx
 import random
 from pathlib import Path
+import SubsampleGraph
 
 def random_walk(graph, it, steps, param):
 
@@ -98,13 +99,17 @@ def write_to_csv(path, output):
 if __name__ == '__main__':
 
     # _g = initialize_graph()
-
-
     _g = initialize_largest_connected_subgraph()
 
-    res = random_walk(_g, 1, int(1e3), "grw")
+    sample_subgraph = SubsampleGraph.random_connected_subgraph(_g, 10000)
 
-    write_to_csv("../../data/results/lcs_generalized_random_walk.csv", res)
+    nx.write_gpickle(sample_subgraph, Path("../../data/processed/sample_10000n_2.p"))
+
+    print("Subgraph size: %d" % len(sample_subgraph))
+
+    # res = random_walk(_g, 1, int(1e3), "grw")
+
+    # write_to_csv("../../data/results/lcs_generalized_random_walk.csv", res)
 
     # Met.print_metrics(_g)
 
