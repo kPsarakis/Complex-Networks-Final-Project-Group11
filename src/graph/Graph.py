@@ -2,9 +2,6 @@ import pandas as pd
 import networkx as nx
 import random
 from pathlib import Path
-import graph.Metrics as Met
-import operator
-
 
 def random_walk(graph, it, steps, param):
 
@@ -100,23 +97,14 @@ def write_to_csv(path, output):
 
 if __name__ == '__main__':
 
-<<<<<<< HEAD
     # _g = initialize_graph()
-=======
-    _g = initialize_graph()
->>>>>>> 5de905f1a0757c04cae72c35df288fc6aff74187
+
 
     _g = initialize_largest_connected_subgraph()
 
-    res = random_walk(_g, 1, int(1e9), "grw")
+    res = random_walk(_g, 1, int(1e3), "grw")
 
     write_to_csv("../../data/results/lcs_generalized_random_walk.csv", res)
 
     # Met.print_metrics(_g)
-<<<<<<< HEAD
 
-    # Met.print_connected_components(g)
-
-    # Met.print_metrics(g)
-=======
->>>>>>> 5de905f1a0757c04cae72c35df288fc6aff74187
