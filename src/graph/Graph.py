@@ -100,11 +100,7 @@ def write_to_csv(path, output):
 
 if __name__ == '__main__':
 
-<<<<<<< HEAD
     # _g = initialize_graph()
-=======
-    _g = initialize_graph()
->>>>>>> 5de905f1a0757c04cae72c35df288fc6aff74187
 
     _g = initialize_largest_connected_subgraph()
 
@@ -112,11 +108,6 @@ if __name__ == '__main__':
 
     write_to_csv("../../data/results/lcs_generalized_random_walk.csv", res)
 
-    # Met.print_metrics(_g)
-<<<<<<< HEAD
-
     # Met.print_connected_components(g)
 
     # Met.print_metrics(g)
-=======
->>>>>>> 5de905f1a0757c04cae72c35df288fc6aff74187
