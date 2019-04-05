@@ -73,30 +73,34 @@ def make_histograms():
     BASE_DIR = ROOT_PATH + "reports/figures/"
 
     # True distribution
+    Y_MAX = 25000
     dists = read_true_distribution_file()
-    plt.hist(dists, bins=500, density=True)
+    plt.hist(dists, bins=500, density=True, log=True)
     plt.title("PDF For full graph")
     plt.xlabel("Popularity")
+    plt.ylim(0, Y_MAX)
     # plt.ylabel("P[Popularity = x]")
     plt.savefig(BASE_DIR + "dist_true_fullgraph.png")
-    plt.clf()
+    plt.close()
 
     # Random walk distribution
     dists = read_subsampled_true_distribution_file()
-    plt.hist(dists, bins=500, density=True)
+    plt.hist(dists, bins=500, density=True, log=True)
     plt.title("PDF For subsampled graph")
     plt.xlabel("Popularity")
+    plt.ylim(0, Y_MAX)
     # plt.ylabel("P[Popularity = x]")
     plt.savefig(BASE_DIR + "dist_true_sampled.png")
-    plt.clf()
+    plt.close()
 
     dists = read_subsampled_results_file("data/results/sampled_random_walk_10mil.csv")
-    plt.hist(dists, bins=500, density=True)
+    plt.hist(dists, bins=500, density=True, log=True)
     plt.title("PDF For random walk")
     plt.xlabel("Popularity")
+    plt.ylim(0, Y_MAX)
     # plt.ylabel("P[Popularity = x]")
     plt.savefig(BASE_DIR + "dist_rw_sampled.png")
-    plt.clf()
+    plt.close()
 
 
     # Principal eigenvector (as a validation) distribution

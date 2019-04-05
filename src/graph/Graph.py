@@ -3,7 +3,7 @@ import networkx as nx
 import pandas as pd
 import random
 import graph.SubsampleGraph as sg
-from tqdm import tqdm
+# from tqdm import tqdm
 
 # This works for MacOS
 ROOT_PATH = "../"
