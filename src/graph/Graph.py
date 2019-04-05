@@ -2,7 +2,9 @@ import pandas as pd
 import networkx as nx
 import random
 from pathlib import Path
-import SubsampleGraph
+import graph.SubsampleGraph as sg
+from tqdm import tqdm
+
 
 def random_walk(graph, it, steps, param):
 
@@ -19,7 +21,7 @@ def random_walk(graph, it, steps, param):
             prev_node = generalized_random_node_id([n[1] for n in list(graph.edges(random_node_id(list(graph.nodes))))],
                                                    node_counts)
 
-        for step in range(0, steps):
+        for step in tqdm(range(0, steps)):
 
             node_counts[str(prev_node)] += 1
 
@@ -57,7 +59,7 @@ def next_step(node, graph, node_counts, param):
 
 
 def initialize_graph():
-    my_file = Path("../../data/graph.p")
+    my_file = Path("../../data/processed/sample_10000n_1.p")
 
     if my_file.is_file():
         graph = nx.read_gpickle(my_file)
@@ -98,28 +100,22 @@ def write_to_csv(path, output):
 
 if __name__ == '__main__':
 
-    # _g = initialize_graph()
-<<<<<<< HEAD
+    _g = initialize_graph()
 
-=======
->>>>>>> 4b0c9746451159ad5314ce34b788de0d08f51289
-    _g = initialize_largest_connected_subgraph()
+    # _g = initialize_largest_connected_subgraph()
 
-    sample_subgraph = SubsampleGraph.random_connected_subgraph(_g, 10000)
+    # sample_subgraph = sg.random_connected_subgraph(_g, 10000)
 
-    nx.write_gpickle(sample_subgraph, Path("../../data/processed/sample_10000n_2.p"))
+    # nx.write_gpickle(sample_subgraph, Path("../../data/processed/sample_10000n_2.p"))
 
-<<<<<<< HEAD
     # Met.print_connected_components(g)
 
     # Met.print_metrics(g)
-=======
-    print("Subgraph size: %d" % len(sample_subgraph))
 
-    # res = random_walk(_g, 1, int(1e3), "grw")
+    # print("Subgraph size: %d" % len(sample_subgraph))
 
-    # write_to_csv("../../data/results/lcs_generalized_random_walk.csv", res)
+    res = random_walk(_g, 1, int(1e6), "rw")
+
+    write_to_csv("../../data/results/final_random_walk.csv", res)
 
     # Met.print_metrics(_g)
-
->>>>>>> 4b0c9746451159ad5314ce34b788de0d08f51289
