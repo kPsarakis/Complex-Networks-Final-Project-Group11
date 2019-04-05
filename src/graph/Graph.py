@@ -1,8 +1,13 @@
-import pandas as pd
-import networkx as nx
-import random
 from pathlib import Path
-import SubsampleGraph
+import networkx as nx
+import pandas as pd
+import random
+import graph.SubsampleGraph
+
+# This works for MacOS
+ROOT_PATH = "../"
+# Alternatively for Windows
+#ROOT_PATH = "../../"
 
 def random_walk(graph, it, steps, param):
 
@@ -57,12 +62,12 @@ def next_step(node, graph, node_counts, param):
 
 
 def initialize_graph():
-    my_file = Path("../../data/graph.p")
+    my_file = Path(ROOT_PATH + "data/graph.p")
 
     if my_file.is_file():
         graph = nx.read_gpickle(my_file)
     else:
-        df = pd.read_csv('../../data/processed/products_nodes_links.csv', sep=';')
+        df = pd.read_csv(ROOT_PATH + 'data/processed/products_nodes_links.csv', sep=';')
         df.columns = ['node1', 'node2']
 
         graph = nx.Graph()
@@ -76,7 +81,7 @@ def initialize_graph():
 
 def initialize_largest_connected_subgraph():
     # check if file already exists, then load, otherwise generate
-    largest_cc_file = Path("../../data/processed/largest_cc_subgraph.p")
+    largest_cc_file = Path(ROOT_PATH + "data/processed/largest_cc_subgraph.p")
 
     if largest_cc_file.is_file():
         largest_cc_subgraph = nx.read_gpickle(largest_cc_file)
@@ -88,6 +93,18 @@ def initialize_largest_connected_subgraph():
         # Save graph
         nx.write_gpickle(largest_cc_subgraph, largest_cc_file)
     return largest_cc_subgraph
+
+def initialize_sampled_subgraph():
+    sample_file = Path(ROOT_PATH + "data/processed/sample_10000n_1.p")
+
+    if sample_file.is_file():
+        sample_subgraph = nx.read_gpickle(sample_file)
+    else:
+        largest_cc_subgraph = initialize_largest_connected_subgraph()
+        sample_subgraph = SubsampleGraph.random_connected_subgraph(largest_cc_subgraph, 10000)
+        nx.write_gpickle(sample_subgraph, sample_file)
+
+    return sample_subgraph
 
 
 def write_to_csv(path, output):
@@ -108,7 +125,7 @@ if __name__ == '__main__':
 
     sample_subgraph = SubsampleGraph.random_connected_subgraph(_g, 10000)
     print("Size of subgraph %d" % len(sample_subgraph))
-    nx.write_gpickle(sample_subgraph, Path("../../data/processed/sample_10000n_1.p"))
+    nx.write_gpickle(sample_subgraph, Path(ROOT_PATH + "data/processed/sample_10000n_1.p"))
 
     print("Subgraph size: %d" % len(sample_subgraph))
 

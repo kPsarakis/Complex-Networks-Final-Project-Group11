@@ -1,5 +1,5 @@
 import networkx as nx
-import Graph
+import graph.Graph
 
 def random_connected_subgraph(graph, N):
     # Select a random node from the nodelist and add it to the set
