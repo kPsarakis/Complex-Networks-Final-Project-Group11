@@ -2,7 +2,8 @@ from pathlib import Path
 import networkx as nx
 import pandas as pd
 import random
-import graph.SubsampleGraph
+import graph.SubsampleGraph as sg
+from tqdm import tqdm
 
 # This works for MacOS
 ROOT_PATH = "../"
@@ -24,7 +25,7 @@ def random_walk(graph, it, steps, param):
             prev_node = generalized_random_node_id([n[1] for n in list(graph.edges(random_node_id(list(graph.nodes))))],
                                                    node_counts)
 
-        for step in range(0, steps):
+        for step in tqdm(range(0, steps)):
 
             node_counts[str(prev_node)] += 1
 
@@ -62,7 +63,7 @@ def next_step(node, graph, node_counts, param):
 
 
 def initialize_graph():
-    my_file = Path(ROOT_PATH + "data/graph.p")
+    my_file = Path(ROOT_PATH + "data/processed/sample_10000n_1.p")
 
     if my_file.is_file():
         graph = nx.read_gpickle(my_file)
@@ -115,18 +116,19 @@ def write_to_csv(path, output):
 
 if __name__ == '__main__':
 
-    # _g = initialize_graph()
-    _g = initialize_largest_connected_subgraph()
-    print("Size of largest component %d" % len(_g))
+    _g = initialize_graph()
 
-    # _g = nx.read_gpickle(Path("../../data/processed/sample_10000n_1.p"))
+    # _g = initialize_largest_connected_subgraph()
 
-    # print("Edges: %d" % _g.number_of_edges())
+    # sample_subgraph = sg.random_connected_subgraph(_g, 10000)
 
-    sample_subgraph = SubsampleGraph.random_connected_subgraph(_g, 10000)
-    print("Size of subgraph %d" % len(sample_subgraph))
-    nx.write_gpickle(sample_subgraph, Path(ROOT_PATH + "data/processed/sample_10000n_1.p"))
+    # nx.write_gpickle(sample_subgraph, Path("../../data/processed/sample_10000n_2.p"))
 
-    print("Subgraph size: %d" % len(sample_subgraph))
+    # Met.print_connected_components(g)
 
+    # Met.print_metrics(g)
+    res = random_walk(_g, 1, int(1e6), "rw")
 
+    write_to_csv("../../data/results/final_random_walk.csv", res)
+
+    # Met.print_metrics(_g)
