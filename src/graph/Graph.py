@@ -110,11 +110,6 @@ if __name__ == '__main__':
     print("Size of subgraph %d" % len(sample_subgraph))
     nx.write_gpickle(sample_subgraph, Path("../../data/processed/sample_10000n_1.p"))
 
-    # print("Subgraph size: %d" % len(sample_subgraph))
+    print("Subgraph size: %d" % len(sample_subgraph))
 
-    # res = random_walk(_g, 1, int(1e3), "grw")
-
-    # write_to_csv("../../data/results/lcs_generalized_random_walk.csv", res)
-
-    # Met.print_metrics(_g)
 
