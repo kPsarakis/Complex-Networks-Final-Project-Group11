@@ -100,12 +100,17 @@ if __name__ == '__main__':
 
     # _g = initialize_graph()
     _g = initialize_largest_connected_subgraph()
+    print("Size of largest component %d" % len(_g))
+
+    # _g = nx.read_gpickle(Path("../../data/processed/sample_10000n_1.p"))
+
+    # print("Edges: %d" % _g.number_of_edges())
 
     sample_subgraph = SubsampleGraph.random_connected_subgraph(_g, 10000)
+    print("Size of subgraph %d" % len(sample_subgraph))
+    nx.write_gpickle(sample_subgraph, Path("../../data/processed/sample_10000n_1.p"))
 
-    nx.write_gpickle(sample_subgraph, Path("../../data/processed/sample_10000n_2.p"))
-
-    print("Subgraph size: %d" % len(sample_subgraph))
+    # print("Subgraph size: %d" % len(sample_subgraph))
 
     # res = random_walk(_g, 1, int(1e3), "grw")
 
