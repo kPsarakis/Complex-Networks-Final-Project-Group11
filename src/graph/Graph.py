@@ -2,8 +2,8 @@ import pandas as pd
 import networkx as nx
 import random
 from pathlib import Path
-import graph.SubsampleGraph as sg
-from tqdm import tqdm
+from tqdm import tqdm, trange
+import numpy as np
 
 
 def random_walk(graph, it, steps, param):
@@ -13,7 +13,12 @@ def random_walk(graph, it, steps, param):
 
     prev_node = None
 
-    for i in range(0, it):
+    if param == "rw":
+        dis = False
+    else:
+        dis = True
+
+    for i in tqdm(range(0, it), total=it, disable=(not dis)):
 
         if param == "rw":
             prev_node = random_node_id(list(graph.nodes))
@@ -21,7 +26,7 @@ def random_walk(graph, it, steps, param):
             prev_node = generalized_random_node_id([n[1] for n in list(graph.edges(random_node_id(list(graph.nodes))))],
                                                    node_counts)
 
-        for step in tqdm(range(0, steps)):
+        for step in tqdm(range(0, steps), total=steps, disable=dis):
 
             node_counts[str(prev_node)] += 1
 
@@ -32,6 +37,45 @@ def random_walk(graph, it, steps, param):
     node_counts = {k: (v/(it*steps)) for k, v in node_counts.items()}
 
     return node_counts
+
+
+def random_walk_with_node_removal(graph, it, steps, param, node_counts):
+
+    df = sort_dict(node_counts)
+
+    n = int(len(node_counts.keys())*0.01)
+
+    # top_graph contains the new graph with the top 1% nodes removed
+    top = df.head(n=n).index.values
+    top_graph = graph.copy()
+    remove_nodes(top_graph, top)
+
+    # bot_graph contains the new graph with the top 1% nodes removed
+    bot_graph = graph.copy()
+    bot = df.tail(n=n).index.values
+    remove_nodes(bot_graph, bot)
+
+    # base_graph contains the new graph with the top 1% nodes removed
+    base_graph = graph.copy()
+    base = df.sample(n=n).index.values
+    remove_nodes(base_graph, base)
+
+    rw_top = random_walk(top_graph, it, steps, param)
+    write_to_csv("../../data/results/"+param+"_3top.csv", rw_top)
+
+    rw_bot = random_walk(bot_graph, it, steps, param)
+    write_to_csv("../../data/results/"+param+"_3bot.csv", rw_bot)
+
+    rw_base = random_walk(base_graph, it, steps, param)
+    write_to_csv("../../data/results/"+param+"_3base.csv", rw_base)
+
+    n2_top = calc_norm1(node_counts, rw_top)
+    print("Norm1 distance of the new graph to the original graph with the top 1% influential nodes removed: ", n2_top)
+    n2_base = calc_norm1(node_counts, rw_base)
+    print("Norm1 distance of the new graph to the original graph with random 1% nodes removed: ", n2_base)
+    n2_bot = calc_norm1(node_counts, rw_bot)
+    print("Norm1 distance of the new graph to the original graph with the bottom 1% influential nodes removed: "
+          , n2_bot)
 
 
 def generalized_random_node_id(nodes, counts: dict):
@@ -64,6 +108,7 @@ def initialize_graph():
     if my_file.is_file():
         graph = nx.read_gpickle(my_file)
     else:
+        print("ERROR you should read the pickle file!!!!")
         df = pd.read_csv('../../data/processed/products_nodes_links.csv', sep=';')
         df.columns = ['node1', 'node2']
 
@@ -98,24 +143,44 @@ def write_to_csv(path, output):
         .to_csv(path)
 
 
+def sort_dict(d):
+    return pd.DataFrame.from_dict(d, orient='index', columns=['number_of_visits'])\
+        .sort_values(by='number_of_visits', ascending=False)
+
+
+def remove_nodes(graph, nodes):
+    for n in list(nodes):
+        graph.remove_node(n)
+
+
+def calc_norm1(orig, rem):
+
+    o = pd.DataFrame.from_dict(orig, orient='index', columns=['visit_frequency'])
+    n = pd.DataFrame.from_dict(rem, orient='index', columns=['visit_frequency'])
+
+    j = o.merge(n, how='outer', left_index=True, right_index=True)
+    j.columns = ['original', 'new']
+    j = j[pd.notnull(j['new'])]
+
+    return sum(abs(j['original'] - j['new']))
+
+
 if __name__ == '__main__':
 
-    _g = initialize_graph()
+    _g = initialize_graph()  # initialize the graph
 
-    # _g = initialize_largest_connected_subgraph()
-
-    # sample_subgraph = sg.random_connected_subgraph(_g, 10000)
-
-    # nx.write_gpickle(sample_subgraph, Path("../../data/processed/sample_10000n_2.p"))
-
-    # Met.print_connected_components(g)
-
-    # Met.print_metrics(g)
-
-    # print("Subgraph size: %d" % len(sample_subgraph))
-
-    res = random_walk(_g, 1, int(1e6), "rw")
-
+    init_rand_points = 1
+    iterations = int(1e7)  # 10 million
+    print("Starting random walk")
+    res = random_walk(_g, init_rand_points, iterations, "rw")  # initialize the graph generic random walk
     write_to_csv("../../data/results/final_random_walk.csv", res)
+    random_walk_with_node_removal(_g, init_rand_points, iterations, "rw", res)
 
-    # Met.print_metrics(_g)
+    _g = initialize_graph()  # initialize the graph
+
+    init_rand_points = 1000
+    iterations = int(1e4)  # 10 thousand
+    print("Starting generalized random walk")
+    res = random_walk(_g, init_rand_points, iterations, "grw")  # initialize the graph generic random walk
+    write_to_csv("../../data/results/final_generalized_random_walk.csv", res)
+    random_walk_with_node_removal(_g, init_rand_points, iterations, "grw", res)
