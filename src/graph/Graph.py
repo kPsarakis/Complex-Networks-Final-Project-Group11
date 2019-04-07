@@ -2,8 +2,7 @@ import pandas as pd
 import networkx as nx
 import random
 from pathlib import Path
-from tqdm import tqdm, trange
-import numpy as np
+from tqdm import tqdm
 
 
 def random_walk(graph, it, steps, param):
@@ -22,9 +21,18 @@ def random_walk(graph, it, steps, param):
 
         if param == "rw":
             prev_node = random_node_id(list(graph.nodes))
+
         elif param == "grw":
-            prev_node = generalized_random_node_id([n[1] for n in list(graph.edges(random_node_id(list(graph.nodes))))],
-                                                   node_counts)
+
+            while True:
+
+                edg = [n[1] for n in list(graph.edges(random_node_id(list(graph.nodes))))]
+
+                if len(edg) != 0:
+                    prev_node = generalized_random_node_id(edg, node_counts)
+                    break
+                else:
+                    print("It would have crushed")
 
         for step in tqdm(range(0, steps), total=steps, disable=dis):
 
